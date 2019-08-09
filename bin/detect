@@ -5,4 +5,4 @@ if [ -f $1/Gemfile ]; then
   exit 0
 else
   exit 1
-fic
+fi
