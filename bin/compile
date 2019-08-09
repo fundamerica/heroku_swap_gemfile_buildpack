@@ -19,25 +19,19 @@ indent() {
 
 export_env_dir $3 "BUNDLE_GEMFILE"
 
-echo "-----> $1"
-ls "$1" | indent
-echo "-----> $2"
-ls "$2" | indent
-echo "-----> $3" 
-ls "$3" | indent
-
 BUNDLE_GEMFILE="${BUNDLE_GEMFILE:-Gemfile}"
 echo "-----> Applying BUNDLE_GEMFILE = $BUNDLE_GEMFILE"
 
 if [ "$BUNDLE_GEMFILE" != "Gemfile" ]; then
-  $file="$1/$BUNDLE_GEMFILE"
+  FILE="$1/$BUNDLE_GEMFILE"
 
-  if [ -f "$file" ]; then
-    echo "Replacing $1/Gemfile(.lock) with $file(.lock)" | indent
-    cp "$file" $1/Gemfile
-    cp "$file.lock" $1/Gemfile.lock
+  if [ -f "$FILE" ]; then
+    echo "Replacing $1/Gemfile with $FILE" | indent
+    yes | cp -f "$FILE" $1/Gemfile
+    echo "Replacing $1/Gemfile.lock with $FILE.lock" | indent
+    yes | cp -f "$FILE.lock" $1/Gemfile.lock
   else
-    echo "$file DOES NOT EXIST" | indent
+    echo "$FILE DOES NOT EXIST" | indent
     exit 1
   fi
 fi
