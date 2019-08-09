@@ -1,20 +1,38 @@
 #!/bin/sh
 
-if [ -f $3/BUNDLE_GEMFILE ]; then
-  echo "Opening $3/BUNDLE_GEMFILE"
-  $gemfile=`cat $3/BUNDLE_GEMFILE`
-  echo "found contents: $gemfile"
+export_env_dir() {
+  env_dir=$1
+  whitelist_regex=${2:-''}
+  blacklist_regex=${3:-'^(PATH|GIT_DIR|CPATH|CPPATH|LD_PRELOAD|LIBRARY_PATH)$'}
+  if [ -d "$env_dir" ]; then
+    for e in $(ls $env_dir); do
+      echo "$e" | grep -E "$whitelist_regex" | grep -qvE "$blacklist_regex" &&
+      export "$e=$(cat $env_dir/$e)"
+      :
+    done
+  fi
+}
 
-  if [ -f "$1/$gemfile" ]; then
-    echo "Replacing $1/Gemfile(.lock) with $1/$gemfile(.lock)"
-    cp "$1/$gemfile" $1/Gemfile
-    cp "$1/$gemfile.lock" $1/Gemfile.lock
+indent() {
+  sed -u 's/^/       /'
+}
+
+export_env_dir $3 "BUNDLE_GEMFILE"
+
+BUNDLE_GEMFILE="${BUNDLE_GEMFILE:-Gemfile}"
+echo "-----> Applying BUNDLE_GEMFILE = $BUNDLE_GEMFILE"
+
+if [ "$BUNDLE_GEMFILE" != "Gemfile" ]; then
+  $file="$1/$BUNDLE_GEMFILE"
+
+  if [ -f "$file" ]; then
+    echo "Replacing $1/Gemfile(.lock) with $file(.lock)"
+    cp "$file" $1/Gemfile
+    cp "$file.lock" $1/Gemfile.lock
   else
-    echo "$1/$gemfile DOES NOT EXIST"
+    echo "$file DOES NOT EXIST"
     exit 1
   fi
-
-  exit 0
-else
-  exit 0
 fi
+
+exit 0
