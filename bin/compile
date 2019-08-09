@@ -4,8 +4,8 @@ if [ -f $3/BUNDLE_GEMFILE ]; then
   $gemfile="$(cat $3/BUNDLE_GEMFILE)"
 
   echo "Replacing Gemfile(.lock) with $gemfile(.lock)"
-  cp "$gemfile" Gemfile
-  cp "$gemfile.lock" Gemfile.lock
+  cp "$1/$gemfile" $1/Gemfile
+  cp "$1/$gemfile.lock" $1/Gemfile.lock
 
   exit 0
 else
