@@ -1,0 +1,15 @@
+#!/bin/sh
+
+if [ -f $3/BUNDLE_GEMFILE ]; then
+  $gemfile="$(cat $3/BUNDLE_GEMFILE)"
+
+  echo "Replacing Gemfile(.lock) with $gemfile(.lock)"
+  mv "$gemfile" Gemfile
+  mv "$gemfile.lock" Gemfile.lock
+
+  exit 0
+else
+  exit 0
+fic
+
+
