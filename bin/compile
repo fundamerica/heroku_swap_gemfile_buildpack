@@ -17,9 +17,10 @@ indent() {
   sed -u 's/^/       /'
 }
 
-export_env_dir $3 "BUNDLE_GEMFILE"
+export_env_dir $3 "^(BUNDLE_GEMFILE|PROCFILE)$"
 
 BUNDLE_GEMFILE="${BUNDLE_GEMFILE:-Gemfile}"
+PROCFILE="${PROCFILE:-Procfile}"
 echo "-----> Applying BUNDLE_GEMFILE = $BUNDLE_GEMFILE"
 
 if [ "$BUNDLE_GEMFILE" != "Gemfile" ]; then
@@ -30,6 +31,20 @@ if [ "$BUNDLE_GEMFILE" != "Gemfile" ]; then
     yes | cp -f "$FILE" $1/Gemfile
     echo "Replacing $1/Gemfile.lock with $FILE.lock" | indent
     yes | cp -f "$FILE.lock" $1/Gemfile.lock
+  else
+    echo "$FILE DOES NOT EXIST" | indent
+    exit 1
+  fi
+fi
+
+echo "-----> Applying Procfile = $PROCFILE"
+
+if [ "$PROCFILE" != "Procfile" ]; then
+  FILE="$1/$PROCFILE"
+
+  if [ -f "$FILE" ]; then
+    echo "Replacing $1/Procfile with $FILE" | indent
+    yes | cp -f "$FILE" $1/Procfile
   else
     echo "$FILE DOES NOT EXIST" | indent
     exit 1
